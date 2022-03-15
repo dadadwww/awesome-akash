@@ -3,39 +3,41 @@ version: "2.0"
 
 services:
   mongo:
-    image: mongo:latest 
+    image: mongo:latest
+    params:
+      storage:
+        data:
+          mount: /var/lib/mongodb
     expose:
-      - port: 27017 
+      - port: 27017
         to:
           - global: true
     env:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=rootpassword
-
 profiles:
   compute:
     mongo:
       resources:
         cpu:
-          units: 1.0
+          units: 0.2
         memory:
-          size: 1Gi
+          size: 256Mi
         storage:
-          size: 1Gi
+          - size: 1Gi
+          - name: data
+            size: 1Gi
+            attributes:
+              persistent: true
+              class: beta2
   placement:
     akash:
-      attributes:
-        host: akash
-      signedBy:
-        anyOf:
-          - "akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63"
       pricing:
-        mongo: 
+        mongo:
           denom: uakt
-          amount: 100
-
+          amount: 1000.1
 deployment:
   mongo:
     akash:
       profile: mongo
-      count: 1 
+      count: 1
